@@ -17,7 +17,9 @@ sorted_hash = list.inject({}) do |hash, item|
   hash[key] = hash.keys.include?(key) ? hash[key] + 1 : 1
   hash
 end
-#puts sorted_hash
+
+# puts sorted_hash
+
 non_sale_price = sorted_hash.inject(0) do |sum, (item, quantity)|
   sum += PRICE_LIST[item.to_sym][:price] * quantity rescue 0 # rescue for unrecognized "items"
 end
@@ -26,7 +28,7 @@ end
 final_result = sorted_hash.inject({}) do |result, (item, quantity)|
   total_price = 0
   price_hash = PRICE_LIST[item]
-  next unless price_hash # skip unrecognized items
+  next result unless price_hash # skip unrecognized items
 
   if price_hash.keys.include? :sale
     # this item has some kind of bogo pricing.
