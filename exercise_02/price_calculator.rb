@@ -18,12 +18,11 @@ sorted_hash = list.inject({}) do |hash, item|
   hash
 end
 
-# puts sorted_hash
+puts "inputs sorted quantities: #{sorted_hash}" if ENV['DEBUG']
 
 non_sale_price = sorted_hash.inject(0) do |sum, (item, quantity)|
   sum += PRICE_LIST[item.to_sym][:price] * quantity rescue 0 # rescue for unrecognized "items"
 end
-#puts "full price: $#{non_sale_price}"
 
 final_result = sorted_hash.inject({}) do |result, (item, quantity)|
   total_price = 0
@@ -43,7 +42,7 @@ final_result = sorted_hash.inject({}) do |result, (item, quantity)|
   result
 end
 
-#puts final_result
+puts "final_result: #{final_result}" if ENV['DEBUG']
 
 col_widths = [8,10,8]
 # simple function to add padding to string for output formatting.
