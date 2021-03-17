@@ -8,19 +8,13 @@ puts "please list out all your items in a comma-delimited list"
 list = gets.split(',').map(&:strip).reject(&:empty?)
 
 if list.length == 0
-  # todo is "abort" the best exit here? (is exit status 1 an error?)
   abort("It looks like you didn't buy anthing today")
 end
 
 # sort the input
 sorted_hash = list.inject({}) do |hash, item|
-  #possibly cast :item to be a symbol here
-  item.downcase!
-  if hash.keys.include? item
-    hash[item] = hash[item] + 1
-  else
-    hash[item] = 1
-  end
+  key = item.downcase.to_sym
+  hash[key] = hash.keys.include?(key) ? hash[key] + 1 : 1
   hash
 end
 #puts sorted_hash
@@ -31,11 +25,11 @@ end
 
 final_result = sorted_hash.inject({}) do |result, (item, quantity)|
   total_price = 0
-  price_hash = PRICE_LIST[item.to_sym]
+  price_hash = PRICE_LIST[item]
   next unless price_hash # skip unrecognized items
 
   if price_hash.keys.include? :sale
-    # this item has some kind of bogo pricing...
+    # this item has some kind of bogo pricing.
     sale_items = quantity / price_hash[:sale][:quantity]
     total_price += sale_items * price_hash[:sale][:price]
     # remainder of items are full price:
@@ -50,14 +44,16 @@ end
 #puts final_result
 
 col_widths = [8,10,8]
+# simple function to add padding to string for output formatting.
 right_pad = ->(string, col_width) {
   string + ' ' * (col_width - string.length)
 }
-# header_rows = [%w(Item Quantity Price), %w(- - -)]
 item_rows = final_result.map do |item, result|
   [item.to_s, result[:quantity].to_s, "$#{result[:total_price].round(2)}"]
 end
-puts '' # just a little space...
+# #
+# Format the output:
+puts ''
 puts "Item    Quantity  Price   "
 puts "--------------------------"
 item_rows.each do |row|
