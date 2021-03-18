@@ -30,7 +30,8 @@ objects = sorted_hash.map do |item, quantity|
   rescue NameError => e
     puts "item #{item} not recognized, skipping..." # maybe only if debug flag
   end
-end
+end.compact
+
 total_price = objects.reduce(0) { |sum, item| sum += item.total_non_sale_cost }
 savings = objects.reduce(0) { |sum, item| sum += item.total_savings }
 
@@ -41,6 +42,6 @@ objects.each do |item|
   puts item.formatted_item_string
 end
 puts ''
-puts "Total price : $#{total_price}"
-puts "You saved $#{savings} today."
+puts "Total price : $#{total_price.round(2)}"
+puts "You saved $#{savings.round(2)} today."
 puts ''

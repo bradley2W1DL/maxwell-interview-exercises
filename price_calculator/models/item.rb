@@ -18,7 +18,7 @@ class Item
   end
 
   def total_non_sale_cost
-    price * @quantity
+    (price * @quantity).round(2)
   end
 
   def total_cost
@@ -29,7 +29,7 @@ class Item
     # remaining items charged full price:
     non_sale_items_cost = (@quantity%sale_quantity) * price
 
-    sale_items_cost + non_sale_items_cost
+    (sale_items_cost + non_sale_items_cost).round(2)
   end
 
   def total_savings
@@ -41,14 +41,16 @@ class Item
   end
 
   def formatted_item_string
-    # output string...
+    # output string as:
+    # Item    Quantity   Cost
+    # with a standardized spacing for each column
     columns = [8,10,8]
     # right_pad string to fit a given string width
     rp = ->(input, total_width) {
       string = input.to_s
       string + ' ' * (total_width - string.length)
     }
-    rp(self.class.name, columns[0]) + rp(@quantity, columns[1]) + rp("$#{total_cost}", columns[2])
+    rp.call(self.class.name, columns[0]) + rp.call(@quantity, columns[1]) + rp.call("$#{total_cost}", columns[2])
   end
 
 end
