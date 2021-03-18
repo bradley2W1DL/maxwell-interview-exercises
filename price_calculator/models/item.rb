@@ -1,6 +1,6 @@
 class Item
   # parent class with some default values
-  def new(quantity)
+  def initialize(quantity)
     @quantity = quantity || 0
   end
 
@@ -18,16 +18,18 @@ class Item
   end
 
   def total_non_sale_cost
-    price * quantity
+    price * @quantity
   end
 
   def total_cost
     return total_non_sale_cost unless sale_item?
 
-    sale_items_cost = (@quantity/sale_quantity) * price
+    # sale items that get some kind of bogo pricing:
+    sale_items_cost = (@quantity/sale_quantity) * sale_price
+    # remaining items charged full price:
     non_sale_items_cost = (@quantity%sale_quantity) * price
 
-    sale_items + non_sale_items
+    sale_items_cost + non_sale_items_cost
   end
 
   def total_savings
@@ -38,8 +40,15 @@ class Item
     false
   end
 
-  def self.subclasses
-    ObjectSpace.each_object(Class).select { |klass| klass < self }
+  def formatted_item_string
+    # output string...
+    columns = [8,10,8]
+    # right_pad string to fit a given string width
+    rp = ->(input, total_width) {
+      string = input.to_s
+      string + ' ' * (total_width - string.length)
+    }
+    rp(self.class.name, columns[0]) + rp(@quantity, columns[1]) + rp("$#{total_cost}", columns[2])
   end
 
 end
